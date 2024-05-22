@@ -1,13 +1,14 @@
-// db.js
 const mysql = require('mysql');
 const util = require('util');
 
-const connection = mysql.createConnection({
+const config = {
   host: 'localhost',
   user: 'root',
   password: 'alcaldiaibague',
   database: 'users'
-});
+};
+
+const connection = mysql.createConnection(config);
 
 connection.connect((err) => {
   if (err) {
@@ -15,8 +16,10 @@ connection.connect((err) => {
     process.exit(1);
   }
   console.log('1.Conectado a la base de datos MySQL!');
+  connection.query = util.promisify(connection.query);
 });
 
-connection.query = util.promisify(connection.query);
-
-module.exports = connection;
+module.exports = {
+  connection,
+  config
+};

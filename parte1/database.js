@@ -1,7 +1,4 @@
-const util = require('util');
-const connection = require('./db');
-
-connection.query = util.promisify(connection.query);
+const { connection } = require('./db');
 
 //2.crear la tabla en mysql
 async function createTableAndInsertUsers() {
@@ -32,20 +29,6 @@ CREATE TABLE usuarios (
 }
 
 //4.obtener el nombre del usuario por email
-
-async function getUserName(email) {
-  try {
-    const results = await connection.query('SELECT nombre FROM usuarios WHERE email = ?', [email]);
-    if (results.length > 0) {
-      return results[0].nombre;
-    } else {
-      throw new Error(`No user found with email: ${email}`);
-    }
-  } catch (err) {
-    console.error('Error getting user name:', err);
-  }
-}
-
 function getUserName(email) {
   connection.query('SELECT nombre FROM usuarios WHERE email = ?', [email], (err, results) => {
     if (err) throw err;
@@ -56,16 +39,22 @@ function getUserName(email) {
 //5.actualizar la contraseña del usuario
 async function updatePassword(username, newPassword) {
   try {
+    const users = await connection.query('SELECT * FROM usuarios WHERE nombre = ?', [username]);
+    if (users.length === 0) {
+      throw new Error(`No user found with username: ${username}`);
+    }
+
     const results = await connection.query('UPDATE usuarios SET contraseña = ? WHERE nombre = ?', [newPassword, username]);
     if (results.affectedRows > 0) {
-      console.log(`Password updated for user: ${username}`);
+      console.log(`5.Contrasena actualizada satisactoriamente para el usuario: ${username}`);
     } else {
-      throw new Error(`No user found with username: ${username}`);
+      console.log(`Password for user ${username} was not updated because it is already the same as the new password.`);
     }
   } catch (err) {
     console.error('Error updating password:', err);
   }
 }
+
 createTableAndInsertUsers()
   .then(() => {
     return getUserName('user2@email.com'); // Reemplazar 'user1@email.com' con el email del usuario que desea obtener
@@ -79,13 +68,20 @@ createTableAndInsertUsers()
   });
 
 //  *******  Descomentar para ejecutar la función de updatePassword y comentar la funcion createTableAndInsertUsers ********
+/* 
+connection.ping(error => {
+  if (error) {
+    console.error('Error pinging the MySQL database:', error);
+    process.exit(1);
+  }
 
-/* updatePassword('User1', 'newPassword')  // Reemplaza 'User1' con el nombre del usuario y 'newPassword' con la nueva contraseña
-  .then(() => {
-    connection.end();
-  })
-  .catch((err) => {
-    console.error(err);
-    connection.end();
-  }); */
+  updatePassword('User2', 'newPassword888')
+    .then(() => {
+      connection.end();
+    })
+    .catch((err) => {
+      console.error(err);
+      connection.end();
+    });
+});  */
 
