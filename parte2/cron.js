@@ -18,7 +18,7 @@ let minutes = date.getMinutes() + 1;
 let hour = date.getHours();
 
 //cron.schedule(`${minutes} ${hour} * * *`, () => { (para probar el cron)  
-cron.schedule(`${minutes} ${hour} * * *`, () => {
+cron.schedule('0 12 * * *', () => {
   // Ejecuta el comando mysqldump para crear una copia de seguridad de la base de datos MySQL
   exec(`MYSQL_PWD=${config.password} mysqldump -u ${config.user} ${config.database} > ${backupPath}`, (error, stdout, stderr) => {
     if (error) {
