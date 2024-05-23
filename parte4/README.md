@@ -10,7 +10,7 @@ Para ejecutar este proyecto, necesitarás:
 - La base de datos MongoDB en ejecución.
 - mongodb
 `npm install mongodb`
-- Los paquetes necesarios instalados en el proyecto. Puedes instalarlos con `npm install`.
+- Los paquetes necesarios instalados en el proyecto. Puede instalarlos con `npm install`.
 
 ## Configuración
 
